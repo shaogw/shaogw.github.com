@@ -65,12 +65,14 @@
 <p>以前是在虚拟主机上Wordpress搭建的博客，结果也没写几篇博客，由于升级主程序、插件出现了好几次问题，解决这些问题让我苦不堪言，对于我这样的非coder来说实在是太折磨人了，放弃是必然。</p>
 <p>几年来一直都对<a href="https://help.github.com/articles/github-flavored-markdown" target="_blank">Markdown</a>很感兴趣，随着近几年<a href="http://octopress.org/" target="_blank">Octopress</a>、<a href="http://jekyllrb.com/" target="_blank">Jeklly</a>等静态博客技术的出现，也曾尝试过，但对于我来说仍然很复杂。还有基于Dropbox的<a href="https://help.github.com/articles/github-flavored-markdown" target="_blank">Markdown</a>静态网站的应用，如<droppages.com>、<farbox.com>，其实还不错，但扩展相对弱一些，也比较小众一些。</p>
 <p>最近一段时间开始学HTML+CSS+Javascript，搭建一个静态博客正好也可以练手。在Github上确实还找到了纯基于Javascript的静态blog程序。</p>
+<a id="more"></a>
+
 <ul>
 <li><a href="https://github.com/onlytiancai/xiaotiantian" target="_blank">小天天博客</a></li>
-<li><a href="https://github.com/hugcoday/hugcoday.github.com" target="_blank">多多的棉花糖</a>。这是基于上面博客程序修改的。</li>
+<li><a href="https://github.com/hugcoday/hugcoday.github.com" target="_blank">多多的棉花糖</a> <em>//这是基于上面博客程序修改的。</em></li>
 </ul>
-<p>但感觉上面用纯Javascrip生成页面有点慢，最终选择了Hexo，一个类似于<a href="http://octopress.org/" target="_blank">Octopress</a>/<a href="http://jekyllrb.com/" target="_blank">Jeklly</a>的程序，使用Node.js，感觉比<a href="http://octopress.org/" target="_blank">Octopress</a>/<a href="http://jekyllrb.com/" target="_blank">Jeklly</a> 更加轻巧便携，正好也可以稍微了解一下[Node.js][] 。</p>
-<p>Hexo 搭建博客的过程看这里：<a href="http://zipperary.com/categories/hexo/" target="_blank">http://zipperary.com/categories/hexo/</a></p>
+<p>但感觉上面用纯Javascrip生成页面有点慢，最终选择了<a href="http://zespia.tw/hexo/" target="_blank">Hexo</a>，一个类似于<a href="http://octopress.org/" target="_blank">Octopress</a>/<a href="http://jekyllrb.com/" target="_blank">Jeklly</a>的程序，使用<a href="http://nodejs.org/" target="_blank">Node.js</a>，感觉比<a href="http://octopress.org/" target="_blank">Octopress</a>/<a href="http://jekyllrb.com/" target="_blank">Jeklly</a> 更加轻巧便携，正好也可以稍微了解一下<a href="http://nodejs.org/" target="_blank">Node.js</a> 。</p>
+<p><a href="http://zespia.tw/hexo/" target="_blank">Hexo</a>搭建博客的过程看这里：<a href="http://zipperary.com/categories/hexo/" target="_blank">http://zipperary.com/categories/hexo/</a></p>
 <p>用<code>npm install -g hexo</code>半天没反应的解决方法：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -85,10 +87,15 @@ npm info underscore （如果上面配置正确这个命令会有字符串respon
     <footer>
       
         
+  
+  <div class="categories">
+    <a href="/categories/Geek/">Geek</a>
+  </div>
+
         
   
   <div class="tags">
-    <a href="/tags/blog/">blog</a>
+    <a href="/tags/blog/">blog</a>, <a href="/tags/hexo/">hexo</a>
   </div>
 
         <!-- Baidu Button BEGIN -->
@@ -140,6 +147,15 @@ npm info underscore （如果上面配置正确这个命令会有字符串respon
 </div>
 
   
+<div class="widget tag">
+  <h3 class="title">分类</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/Geek/">Geek</a><small>1</small></li>
+  
+  </ul>
+</div>
+
 
   
 <div class="widget tag">
@@ -147,6 +163,8 @@ npm info underscore （如果上面配置正确这个命令会有字符串respon
   <ul class="entry">
   
     <li><a href="/tags/blog/">blog</a><small>1</small></li>
+  
+    <li><a href="/tags/hexo/">hexo</a><small>1</small></li>
   
   </ul>
 </div>
