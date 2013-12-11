@@ -56,6 +56,270 @@
     <header>
       
         <div class="icon"></div>
+        <time datetime="2013-12-06T08:16:20.000Z"><a href="/2013/12/06/用VBA批量合并Excel/">12月 6 2013</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2013/12/06/用VBA批量合并Excel/">用VBA批量合并Excel</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1>问题</h1>
+<p>同事用Excel发了一个调查表格，用来收集其他同事反馈的需求，每一个人都反馈回来一个Excel文件，要是手动打开每一个文件复制粘贴还是挺痛苦的。</p>
+<p>除此之外，还有一些特殊的格式处理：</p>
+<ol>
+<li>合并单元格</li>
+<li>空行</li>
+<li>某列的值未填写</li>
+</ol>
+<h1>处理思路</h1>
+<ul>
+<li>准备工作<ul>
+<li>把要合并的Excel放在一个文件夹中</li>
+<li>Excel起名要有一定规则            // 可以使用TC批量替换功能配合正则表达式快速改名</li>
+<li>创建一直支持宏的Excel文件，作为汇总后的结果文件        // 文件后缀为<code>.xlsm</code></li>
+</ul>
+</li>
+<li>在结果Excel文件中编写VBA，处理过程如下：<ul>
+<li>合并Excel<ul>
+<li>找到文件夹中所有需要合并的Excel文件</li>
+<li>循环处理<ul>
+<li>打开输入的Excel文件</li>
+<li>计算有效行数、列数</li>
+<li>为某列赋值</li>
+<li>计算要复制的区域，选中并复制</li>
+<li>切换到结果Excel文件，追加粘帖</li>
+<li>关闭且不保存输入的Excel文件</li>
+<li>下一文件</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>删除空行</li>
+<li>合并单元格</li>
+</ul>
+</li>
+</ul>
+<h1>代码</h1>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+</pre></td><td class="code"><pre><span class="keyword">Sub</span> all()
+    清空
+    合并
+    删除空行
+    取消合并单元格
+    
+<span class="keyword">End</span> <span class="keyword">Sub</span>
+
+<span class="keyword">Sub</span> 清空()
+    <span class="keyword">Dim</span> rowss
+    
+    rowss = Workbooks(<span class="number">1</span>).Sheets(<span class="number">1</span>).Range(<span class="string">"C65536"</span>).<span class="keyword">End</span>(xlUp).Row		`根据C列计算有效行数
+    
+    Rows(<span class="string">"2:"</span> & <span class="built_in">CStr</span>(rowss)).<span class="keyword">Select</span>
+    Selection.Delete Shift:=xlUp
+<span class="keyword">End</span> <span class="keyword">Sub</span>
+
+<span class="keyword">Sub</span> 合并()
+
+    <span class="keyword">Dim</span> fs, f, f1, fc, x, rowss, columnss, editorname
+ 
+ ` 下面是用来获得某个文件夹中的文件列表   
+    <span class="keyword">Set</span> fs = <span class="built_in">CreateObject</span>(<span class="string">"Scripting.FileSystemObject"</span>)
+    <span class="keyword">Set</span> f = fs.GetFolder(<span class="string">"D:\收集清单\"</span>)
+    <span class="keyword">Set</span> fc = f.Files
+    
+    x = <span class="number">2</span>
+    
+    <span class="keyword">For</span> <span class="keyword">Each</span> f1 <span class="keyword">In</span> fc
+        <span class="keyword">If</span> <span class="built_in">InStr</span>(f1.Name, <span class="string">"需求搜集清单_"</span>) &gt; <span class="number">0</span> <span class="keyword">Then</span>
+
+`			Excel中有一列需要填写记录人名字，但收集到的Excel都未填写，正好文件名中有，提取出来            
+            editorname = <span class="built_in">Right</span>(f1.Name, <span class="built_in">Len</span>(f1.Name) - <span class="built_in">InStrRev</span>(f1.Name, <span class="string">"_"</span>))
+            editorname = <span class="built_in">Left</span>(editorname, <span class="built_in">Len</span>(editorname) - <span class="number">5</span>)
+           
+            Workbooks.Open (f1.Path)
+            rowss = Workbooks(f1.Name).Sheets(<span class="number">1</span>).Range(<span class="string">"C65536"</span>).<span class="keyword">End</span>(xlUp).Row
+
+`			G列为记录人列，用计算出来的editorname赋值
+            Workbooks(f1.Name).Sheets(<span class="number">1</span>).Range(<span class="string">"G2:G"</span> & <span class="built_in">CStr</span>(rowss)).Value = editorname
+            
+            Workbooks(f1.Name).Sheets(<span class="number">1</span>).Range(<span class="string">"A3:I"</span> & <span class="built_in">CStr</span>(rowss)).Copy
+            Workbooks(<span class="number">1</span>).Activate
+            Workbooks(<span class="number">1</span>).Sheets(<span class="number">1</span>).Range(<span class="string">"A"</span> & <span class="built_in">CStr</span>(x) & <span class="string">":I"</span> & <span class="built_in">CStr</span>(x + rowss - <span class="number">2</span>)).<span class="keyword">Select</span>
+            Workbooks(<span class="number">1</span>).Sheets(<span class="number">1</span>).Paste
+
+            x = x + rowss - <span class="number">2</span>
+            Application.CutCopyMode = <span class="literal">False</span>
+            Workbooks(f1.Name).Close savechanges:=<span class="literal">False</span>
+            
+        <span class="keyword">End</span> <span class="keyword">If</span>
+    <span class="keyword">Next</span>
+    
+
+            
+<span class="keyword">End</span> <span class="keyword">Sub</span>
+
+<span class="keyword">Sub</span> 删除空行()
+    <span class="keyword">Dim</span> i, rowss
+    
+    rowss = Workbooks(<span class="number">1</span>).Sheets(<span class="number">1</span>).Range(<span class="string">"C65536"</span>).<span class="keyword">End</span>(xlUp).Row
+
+    <span class="keyword">For</span> i = rowss <span class="keyword">To</span> <span class="number">2</span> <span class="keyword">Step</span> -<span class="number">1</span>
+        <span class="keyword">If</span> Cells(i, <span class="number">3</span>) = <span class="string">""</span> <span class="keyword">Then</span>
+            Sheets(<span class="number">1</span>).Rows(i).Delete
+        <span class="keyword">End</span> <span class="keyword">If</span>
+    <span class="keyword">Next</span>
+    
+    
+<span class="keyword">End</span> <span class="keyword">Sub</span>
+
+<span class="keyword">Sub</span> 取消合并单元格()
+    <span class="keyword">Dim</span> rowss
+    
+    rowss = Workbooks(<span class="number">1</span>).Sheets(<span class="number">1</span>).Range(<span class="string">"C65536"</span>).<span class="keyword">End</span>(xlUp).Row
+    
+    Workbooks(<span class="number">1</span>).Sheets(<span class="number">1</span>).Range(<span class="string">"A2:I"</span> & <span class="built_in">CStr</span>(rowss)).UnMerge
+    
+<span class="comment">'   将拆分后单元格控制用原值填充</span>
+    Range(<span class="string">"B1:B"</span> & <span class="built_in">CStr</span>(rowss)).<span class="keyword">Select</span>
+    Selection.SpecialCells(xlCellTypeBlanks).<span class="keyword">Select</span>
+    Selection.FormulaR1C1 = <span class="string">"=R[-1]C"</span>
+    
+<span class="comment">'   转换为文本</span>
+    Columns(<span class="string">"B:B"</span>).<span class="keyword">Select</span>
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=<span class="literal">False</span>, Transpose:=<span class="literal">False</span>
+    
+<span class="keyword">End</span> <span class="keyword">Sub</span>
+</pre></td></tr></table></figure>
+
+<h1>注意事项</h1>
+<p>上面代码并没有进行优化，其实可以写更加简洁一些。</p>
+<p>同时这也不是一个通用的程序，只能用于处理特定格式的表格，要根据自己的情况调整，这里只是提供了一个思路。</p>
+<h1>心得体会</h1>
+<p>对于VBA我也不是很熟，都是遇到问题Google之，照猫画虎，其实也没有用太长时间就完成了。</p>
+<p>主要搜过的几个问题：</p>
+<ol>
+<li>Excel VBA 读取文件列表</li>
+<li>Excel VBA 如何计算有效行数</li>
+<li>Excel VBA range</li>
+<li>Excel VBA 删除空行</li>
+<li>VBA 字符串函数</li>
+</ol>
+<p>同时，要善于用利Excel宏录制功能，快速生成VBA代码，分析这些代码，知道VBA的相关功能处理。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
         <time datetime="2013-10-27T11:06:55.000Z"><a href="/2013/10/27/到新单位一个月的感受/">10月 27 2013</a></time>
       
       
@@ -186,6 +450,8 @@
   
     <li><a href="/categories/Life/">Life</a><small>1</small></li>
   
+    <li><a href="/categories/办公软件/">办公软件</a><small>1</small></li>
+  
   </ul>
 </div>
 
@@ -194,6 +460,10 @@
 <div class="widget tag">
   <h3 class="title">标签</h3>
   <ul class="entry">
+  
+    <li><a href="/tags/Excel/">Excel</a><small>1</small></li>
+  
+    <li><a href="/tags/VBA/">VBA</a><small>1</small></li>
   
     <li><a href="/tags/blog/">blog</a><small>1</small></li>
   
